@@ -6,11 +6,17 @@ class VideoAllAdmin(admin.ModelAdmin):
     """
         All videos
     """
-    list_display = ["title", "video_id"]
+    list_display = ["title", "id", "video_id", "is_published"]
     search_fields = ['title']
+    list_filter = ['active']
+    readonly_fields = ['id', 'is_published']
 
     class Meta:
         model = VideoAllProxy
+
+    # def published(self, obj, *args, **kwargs):
+    #     print(obj, args, kwargs)
+    #     return obj.active
 
 
 class VideoProxyAdmin(admin.ModelAdmin):
