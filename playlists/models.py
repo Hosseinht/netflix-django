@@ -44,7 +44,14 @@ class Playlist(models.Model):
     video = models.ForeignKey(
         Video,
         null=True,
+        related_name='playlist_featured',
         on_delete=models.SET_NULL
+    )
+    # so Video can hav multiple playlist
+    videos = models.ManyToManyField(
+        Video,
+        related_name='playlist_item',
+        blank=True
     )
     active = models.BooleanField(default=True)
     timestamp = models.DateTimeField(auto_now_add=True)

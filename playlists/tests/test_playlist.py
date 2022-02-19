@@ -8,30 +8,69 @@ from videos.models import Video
 
 
 class PlaylistModelTestCase(TestCase):
-    def setUp(self) -> None:
-        """
-            This method add data to the database
-        """
+    def create_videos(self):
         video_a = Video.objects.create(
             title='Vide title',
             video_id='abc'
         )
-        self.video_a = video_a
-        self.obj_a = Playlist.objects.create(
-            title="This is my title",
-            video=video_a
+        video_b = Video.objects.create(
+            title='Vide title',
+            video_id='abcd'
         )
-        self.obj_b = Playlist.objects.create(
+        video_c = Video.objects.create(
+            title='Vide title',
+            video_id='abce'
+        )
+        self.video_a = video_a
+        self.video_b = video_b
+        self.video_c = video_c
+
+    def setUp(self) -> None:
+        """
+            This method add data to the database
+        """
+        self.create_videos()
+        self.playlist_obj_a = Playlist.objects.create(
+            title="This is my title",
+            video=self.video_a
+        )
+        playlist_obj_b = Playlist.objects.create(
             title="This is my title",
             state=PublishStateOptions.PUBLISH,
-            video=video_a,
+            video=self.video_a,
         )
+        playlist_obj_b.videos.set(
+            [self.video_a, self.video_b, self.video_c]
+        )
+        # set is because of ManyToMany field
+        playlist_obj_b.save()
+        self.playlist_obj_b = playlist_obj_b
 
     def test_playlist_video(self):
-        self.assertEqual(self.obj_a.video, self.video_a)
+        self.assertEqual(self.playlist_obj_a.video, self.video_a)
+
+    def test_playlist_video_items(self):
+        # we expect 3 videos
+        count = self.playlist_obj_b.videos.all().count()
+        self.assertEqual(count, 3)
+
+    def test_video_playlist_ids_property(self):
+        # get_playlist_ids is a method in Video model
+        # which return all playlist ids that the video is in it
+        ids = self.playlist_obj_a.video.get_playlist_ids()
+        # obj_a has a foreign key relation with video_a
+        # , so we have the playlist id in the Video object
+
+        actual_ids = list(
+            Playlist.objects.filter(
+                video=self.video_a)
+                .values_list('id', flat=True)
+        )
+        # id of the playlist that filtered by the video_a
+        self.assertEqual(ids, actual_ids)
 
     def test_video_playlist(self):
-        qs = self.video_a.playlist_set.all()
+        qs = self.video_a.playlist_featured.all()
 
         self.assertEqual(qs.count(), 2)
 
@@ -42,10 +81,10 @@ class PlaylistModelTestCase(TestCase):
         self.assertTrue(qs.exists())
 
     def test_slug_field(self):
-        title = self.obj_a.title
+        title = self.playlist_obj_a.title
         test_slug = slugify(title)
 
-        self.assertEqual(test_slug, self.obj_a.slug)
+        self.assertEqual(test_slug, self.playlist_obj_a.slug)
         # slug create automatically base on title
         # so here we get a query set slugify its title here
         # then compare it with th e slug that automatically created
