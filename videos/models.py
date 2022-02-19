@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.utils.text import slugify
 
 
 class Video(models.Model):
@@ -11,10 +12,10 @@ class Video(models.Model):
     title = models.CharField(max_length=220)
     description = models.TextField(blank=True, null=True)
     slug = models.SlugField(blank=True, null=True)
-    video_id = models.CharField(max_length=220)
+    video_id = models.CharField(max_length=220, unique=True)
     active = models.BooleanField(default=True)
-    # timestamp
-    # updated
+    timestamp = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
     state = models.CharField(
         max_length=2,
         choices=VideoStateOptions.choices,
@@ -27,18 +28,21 @@ class Video(models.Model):
         null=True
     )
 
-    # we want to set timestamp when state toggle one approach is override save method. we can use signals also
+    # we want to set timestamp when state toggle one
+    # approach is override save method. we can use signals also
 
     @property
     def is_published(self):
         return self.active
 
     def save(self, *args, **kwargs):
-        if self.state == self.VideoStateOptions.PUBLISH and self.publish_timestamp is None:
+        if self.state == self.VideoStateOptions.PUBLISH \
+                and self.publish_timestamp is None:
             self.publish_timestamp = timezone.now()
         elif self.state == self.VideoStateOptions.DRAFT:
             self.publish_timestamp = None
-
+        if self.slug is None:
+            self.slug = slugify(self.title)
         super().save(*args, **kwargs)
 
 
