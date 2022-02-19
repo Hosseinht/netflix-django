@@ -3,6 +3,32 @@ from django.utils import timezone
 from django.utils.text import slugify
 
 
+class VideoQuerySet(models.QuerySet):
+    # customize queryset filtering
+    def published(self):
+        now = timezone.now()
+        return self.filter(
+            state=Video.VideoStateOptions.PUBLISH,
+            publish_timestamp__lte=now
+        )
+        # we want our own custom method for filtering
+
+
+class VideoManager(models.Manager):
+    def get_queryset(self):
+        return VideoQuerySet(self.model, using=self._db)
+
+    # self._db = default database
+
+    def published(self):
+        return self.get_queryset().published()
+    # now we can have Vide.objects
+    # .filter(title__icontains="something").publish()
+
+
+# because we want to use it over and over again
+# , and we want our custom method to filter
+
 class Video(models.Model):
     class VideoStateOptions(models.TextChoices):
         # Constant = db_value, user_display_value
@@ -30,6 +56,8 @@ class Video(models.Model):
 
     # we want to set timestamp when state toggle one
     # approach is override save method. we can use signals also
+
+    objects = VideoManager()
 
     @property
     def is_published(self):
