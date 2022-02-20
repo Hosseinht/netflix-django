@@ -60,6 +60,9 @@ class Video(models.Model):
 
     objects = VideoManager()
 
+    def __str__(self):
+        return str(self.title)
+
     @property
     def is_published(self):
         return self.active

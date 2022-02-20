@@ -6,10 +6,19 @@ class VideoAllAdmin(admin.ModelAdmin):
     """
         All videos
     """
-    list_display = ["title", "id", "video_id", "state", "is_published", "get_playlist_ids"]
+    list_display = [
+        "title", "id", "video_id",
+        "state", "is_published",
+        "get_playlist_ids"
+    ]
     search_fields = ['title']
     list_filter = ['active', 'state']
-    readonly_fields = ['id', 'is_published', 'publish_timestamp', "get_playlist_ids"]
+    readonly_fields = [
+        'id',
+        'is_published',
+        'publish_timestamp',
+        "get_playlist_ids"
+    ]
 
     class Meta:
         model = VideoAllProxy

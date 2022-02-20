@@ -51,7 +51,8 @@ class Playlist(models.Model):
     videos = models.ManyToManyField(
         Video,
         related_name='playlist_item',
-        blank=True
+        blank=True,
+        through='PlaylistItem',
     )
     active = models.BooleanField(default=True)
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -73,9 +74,22 @@ class Playlist(models.Model):
 
     objects = PlaylistManager()
 
+    def __str__(self):
+        return str(self.title)
+
     @property
     def is_published(self):
         return self.active
+
+
+class PlaylistItem(models.Model):
+    playlist = models.ForeignKey(Playlist, on_delete=models.CASCADE)
+    video = models.ForeignKey(Video, on_delete=models.CASCADE)
+    order = models.IntegerField(default=1)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['order', '-timestamp']
 
 
 pre_save.connect(publish_state_pre_save, sender=Playlist)

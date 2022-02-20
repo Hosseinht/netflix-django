@@ -25,6 +25,8 @@ class PlaylistModelTestCase(TestCase):
         self.video_b = video_b
         self.video_c = video_c
 
+        self.video_qs = Video.objects.all()
+
     def setUp(self) -> None:
         """
             This method add data to the database
@@ -39,10 +41,11 @@ class PlaylistModelTestCase(TestCase):
             state=PublishStateOptions.PUBLISH,
             video=self.video_a,
         )
-        playlist_obj_b.videos.set(
-            [self.video_a, self.video_b, self.video_c]
-        )
+        # playlist_obj_b.videos.set(
+        #     [self.video_a, self.video_b, self.video_c]
+        # )
         # set is because of ManyToMany field
+        playlist_obj_b.videos.set(self.video_qs)
         playlist_obj_b.save()
         self.playlist_obj_b = playlist_obj_b
 
@@ -54,6 +57,27 @@ class PlaylistModelTestCase(TestCase):
         count = self.playlist_obj_b.videos.all().count()
         self.assertEqual(count, 3)
 
+    def test_playlist_through_model(self):
+        video_qs = sorted(list(self.video_qs.values_list('id')))
+        # query all video in Video model
+        playlist_obj_video_qs = sorted(
+            list(self.playlist_obj_b.videos.all()
+                 .values_list('id'))
+        )
+        # query all the videos that is in playlist_obj_b
+        playlist_obj_playlist_item_qs = sorted(
+            list(self.playlist_obj_b.playlistitem_set.all()
+                 .values_list('video'))
+        )
+        # query PlaylistItem in Playlist model
+
+        # all these should have the same video ids in them
+        self.assertEqual(
+            video_qs,
+            playlist_obj_video_qs,
+            playlist_obj_playlist_item_qs
+        )
+
     def test_video_playlist_ids_property(self):
         # get_playlist_ids is a method in Video model
         # which return all playlist ids that the video is in it
@@ -61,11 +85,10 @@ class PlaylistModelTestCase(TestCase):
         # obj_a has a foreign key relation with video_a
         # , so we have the playlist id in the Video object
 
-        actual_ids = list(
-            Playlist.objects.filter(
-                video=self.video_a)
-                .values_list('id', flat=True)
-        )
+        actual_ids = list(Playlist.objects
+                          .filter(video=self.video_a)
+                          .values_list('id', flat=True)
+                          )
         # id of the playlist that filtered by the video_a
         self.assertEqual(ids, actual_ids)
 
