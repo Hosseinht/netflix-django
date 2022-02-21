@@ -93,6 +93,49 @@ class PlaylistItem(models.Model):
 
     class Meta:
         ordering = ['order', '-timestamp']
+    # manytomany field for Playlist
+
+
+class TvShowProxyManager(PlaylistManager):
+    def all(self):
+        return self.get_queryset().filter(parent__isnull=True)
+        # get_queryset() is a method in PlaylistManager
+        # which return queryset from PlaylistQuerySet
+
+
+class TvShowProxy(Playlist):
+    """
+        This will show all parents playlists
+    """
+    objects = TvShowProxyManager()
+
+    class Meta:
+        verbose_name = "Tv Show"
+        verbose_name_plural = "Tv Shows"
+        proxy = True
+
+
+class TvShowSeasonProxyManager(PlaylistManager):
+    def all(self):
+        return self.get_queryset().filter(parent__isnull=False)
+        # get_queryset() is a method in PlaylistManager
+        # which return queryset from PlaylistQuerySet
+
+
+class TvShowSeasonProxy(Playlist):
+    """
+        This will show all the seasons of a tv series
+        seasons of that parent playlist
+        for example parent playlist is The Office
+        and seasons playlists will be The Office Season 1
+        The Office Season 2 etc.
+    """
+    objects = TvShowSeasonProxyManager()
+
+    class Meta:
+        verbose_name = "Season"
+        verbose_name_plural = "Seasons"
+        proxy = True
 
 
 pre_save.connect(publish_state_pre_save, sender=Playlist)
