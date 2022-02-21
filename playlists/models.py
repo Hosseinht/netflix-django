@@ -38,9 +38,20 @@ class PlaylistManager(models.Manager):
 # , and we want our custom method to filter
 
 class Playlist(models.Model):
+    class PlaylistTypeChoices(models.TextChoices):
+        MOVIE = "MOV", "Movie"
+        SHOW = "TVS", "TV Show"
+        SEASON = "SEA", "Season"
+        PLAYLIST = "PLA", "Playlist"
+
     parent = models.ForeignKey('self', blank=True, null=True, on_delete=models.SET_NULL)
     order = models.IntegerField(default=1)
     title = models.CharField(max_length=220)
+    type = models.CharField(
+        max_length=3,
+        choices=PlaylistTypeChoices.choices,
+        default=PlaylistTypeChoices.PLAYLIST
+    )
     description = models.TextField(blank=True, null=True)
     slug = models.SlugField(blank=True, null=True)
     video = models.ForeignKey(
@@ -96,9 +107,37 @@ class PlaylistItem(models.Model):
     # manytomany field for Playlist
 
 
+class MovieProxyManager(PlaylistManager):
+    def all(self):
+        return self.get_queryset().filter(
+            type=Playlist.PlaylistTypeChoices.MOVIE
+        )
+        # get_queryset() is a method in PlaylistManager
+        # which return queryset from PlaylistQuerySet
+
+
+class MovieProxy(Playlist):
+    """
+        This will show all parents playlists
+    """
+    objects = MovieProxyManager()
+
+    class Meta:
+        verbose_name = "Movie"
+        verbose_name_plural = "Movies"
+        proxy = True
+
+    def save(self, *args, **kwargs):
+        self.type = Playlist.PlaylistTypeChoices.MOVIE
+        super().save(*args, **kwargs)
+
+
 class TvShowProxyManager(PlaylistManager):
     def all(self):
-        return self.get_queryset().filter(parent__isnull=True)
+        return self.get_queryset().filter(
+            parent__isnull=True,
+            type=Playlist.PlaylistTypeChoices.SHOW
+        )
         # get_queryset() is a method in PlaylistManager
         # which return queryset from PlaylistQuerySet
 
@@ -114,10 +153,17 @@ class TvShowProxy(Playlist):
         verbose_name_plural = "Tv Shows"
         proxy = True
 
+    def save(self, *args, **kwargs):
+        self.type = Playlist.PlaylistTypeChoices.SHOW
+        super().save(*args, **kwargs)
+
 
 class TvShowSeasonProxyManager(PlaylistManager):
     def all(self):
-        return self.get_queryset().filter(parent__isnull=False)
+        return self.get_queryset().filter(
+            parent__isnull=False,
+            type=Playlist.PlaylistTypeChoices.SEASON
+        )
         # get_queryset() is a method in PlaylistManager
         # which return queryset from PlaylistQuerySet
 
@@ -136,6 +182,10 @@ class TvShowSeasonProxy(Playlist):
         verbose_name = "Season"
         verbose_name_plural = "Seasons"
         proxy = True
+
+    def save(self, *args, **kwargs):
+        self.type = Playlist.PlaylistTypeChoices.SEASON
+        super().save(*args, **kwargs)
 
 
 pre_save.connect(publish_state_pre_save, sender=Playlist)
