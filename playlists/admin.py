@@ -31,7 +31,7 @@ class PlaylistAdmin(admin.ModelAdmin):
 
 
 class MovieProxyAdmin(admin.ModelAdmin):
-    fields = ['title', 'description', 'state', 'video', 'slug']
+    fields = ['title', 'description','category', 'state', 'video', 'slug']
 
     class Meta:
         model = MovieProxy
@@ -43,7 +43,7 @@ class MovieProxyAdmin(admin.ModelAdmin):
 class TvShowSeasonProxyInline(admin.TabularInline):
     model = TvShowSeasonProxy
     extra = 0
-    fields = ['order', 'title', 'state']
+    fields = ['order', 'title', 'category', 'state']
 
     # def get_queryset(self, request):
     #     return TvShowSeasonProxy.objects.all()
@@ -56,7 +56,7 @@ class TvShowProxyAdmin(admin.ModelAdmin):
         in Inline part we will see all the seasons
     """
     inlines = [TvShowSeasonProxyInline]
-    fields = ['title', 'description', 'state', 'video', 'slug']
+    fields = ['title', 'description', 'category', 'state', 'video', 'slug']
 
     class Meta:
         model = TvShowProxy

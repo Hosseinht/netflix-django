@@ -8,6 +8,7 @@ from netflixproject.db.receivers import (
     slugify_pre_save
 )
 
+from categories.models import Category
 from videos.models import Video
 
 
@@ -44,7 +45,19 @@ class Playlist(models.Model):
         SEASON = "SEA", "Season"
         PLAYLIST = "PLA", "Playlist"
 
-    parent = models.ForeignKey('self', blank=True, null=True, on_delete=models.SET_NULL)
+    parent = models.ForeignKey(
+        'self',
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL
+    )
+    category = models.ForeignKey(
+        Category,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='playlists'
+    )
     order = models.IntegerField(default=1)
     title = models.CharField(max_length=220)
     type = models.CharField(
