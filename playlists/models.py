@@ -38,12 +38,15 @@ class PlaylistManager(models.Manager):
 # , and we want our custom method to filter
 
 class Playlist(models.Model):
+    parent = models.ForeignKey('self', blank=True, null=True, on_delete=models.SET_NULL)
+    order = models.IntegerField(default=1)
     title = models.CharField(max_length=220)
     description = models.TextField(blank=True, null=True)
     slug = models.SlugField(blank=True, null=True)
     video = models.ForeignKey(
         Video,
         null=True,
+        blank=True,
         related_name='playlist_featured',
         on_delete=models.SET_NULL
     )
