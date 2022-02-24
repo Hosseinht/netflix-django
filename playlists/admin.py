@@ -7,6 +7,8 @@ from .models import (
     MovieProxy
 )
 
+from tags.admin import TaggedItemInline
+
 
 class PlaylistItemInline(admin.TabularInline):
     model = PlaylistItem
@@ -31,7 +33,7 @@ class PlaylistAdmin(admin.ModelAdmin):
 
 
 class MovieProxyAdmin(admin.ModelAdmin):
-    fields = ['title', 'description','category', 'state', 'video', 'slug']
+    fields = ['title', 'description', 'category', 'state', 'video', 'slug']
 
     class Meta:
         model = MovieProxy
@@ -55,7 +57,7 @@ class TvShowProxyAdmin(admin.ModelAdmin):
         which contains all the season of that playlist or
         in Inline part we will see all the seasons
     """
-    inlines = [TvShowSeasonProxyInline]
+    inlines = [TaggedItemInline, TvShowSeasonProxyInline]
     fields = ['title', 'description', 'category', 'state', 'video', 'slug']
 
     class Meta:

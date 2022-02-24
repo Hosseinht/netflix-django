@@ -1,3 +1,4 @@
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.db.models.signals import pre_save
 from django.utils import timezone
@@ -9,6 +10,7 @@ from netflixproject.db.receivers import (
 )
 
 from categories.models import Category
+from tags.models import TaggedItem
 from videos.models import Video
 
 
@@ -95,6 +97,7 @@ class Playlist(models.Model):
         blank=True,
         null=True
     )
+    tags = GenericRelation(TaggedItem, related_query_name='playlist')
 
     # we want to set timestamp when state toggle one
     # approach is override save method. we can use signals also
