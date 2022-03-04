@@ -10,7 +10,7 @@ class CategoryTestCase(TestCase):
         cat_a = Category.objects.create(title="Comedy")
         cat_b = Category.objects.create(title="Action", active=False)
         self.playlist_a = Playlist.objects.create(
-            title='My Title',
+            title="My Title",
             category=cat_a,
         )
         self.cat_a = cat_a
@@ -25,3 +25,5 @@ class CategoryTestCase(TestCase):
     def test_related_playlist(self):
         qs = self.cat_a.playlists.all()
         self.assertEqual(qs.count(), 1)
+
+

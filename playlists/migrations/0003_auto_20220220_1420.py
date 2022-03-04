@@ -7,18 +7,22 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('playlists', '0002_auto_20220220_0822'),
+        ("playlists", "0002_auto_20220220_0822"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='playlist',
-            name='order',
+            model_name="playlist",
+            name="order",
             field=models.IntegerField(default=1),
         ),
         migrations.AddField(
-            model_name='playlist',
-            name='parent',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='playlists.playlist'),
+            model_name="playlist",
+            name="parent",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="playlists.playlist",
+            ),
         ),
     ]

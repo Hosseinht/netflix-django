@@ -9,12 +9,9 @@ from videos.models import Video
 class VideoModelTestCase(TestCase):
     def setUp(self) -> None:
         """
-            This method add data to the database
+        This method add data to the database
         """
-        self.obj_a = Video.objects.create(
-            title="This is my title",
-            video_id="123"
-        )
+        self.obj_a = Video.objects.create(title="This is my title", video_id="123")
         self.obj_b = Video.objects.create(
             title="This is my title",
             state=PublishStateOptions.PUBLISH,
@@ -30,6 +27,7 @@ class VideoModelTestCase(TestCase):
         title = self.obj_a.title
         test_slug = slugify(title)
         self.assertEqual(test_slug, self.obj_a.slug)
+        # self.assertEqual(test_slug, 'this-is-my-title')
         # slug create automatically base on title
         # so here we get a query set slugify its title here
         # then compare it with th e slug that automatically created
@@ -46,8 +44,7 @@ class VideoModelTestCase(TestCase):
         # qs = Video.objects.filter(state=PublishStateOptions.PUBLISH)
         now = timezone.now()
         published_qs = Video.objects.filter(
-            state=PublishStateOptions.PUBLISH,
-            publish_timestamp__lte=now
+            state=PublishStateOptions.PUBLISH, publish_timestamp__lte=now
         )
         # we have published_timestamp when
         # state = PublishStateOptions.PUBLISH

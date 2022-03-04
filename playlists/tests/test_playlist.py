@@ -9,40 +9,25 @@ from videos.models import Video
 
 class PlaylistModelTestCase(TestCase):
     def creat_parent_playlist_with_children(self):
-        the_office = Playlist.objects.create(title='The Office Series')
+        the_office = Playlist.objects.create(title="The Office Series")
         # parent playlist
 
         # children playlist
         season_1 = Playlist.objects.create(
-            title='The Office Series Season 1',
-            parent=the_office,
-            order=1
+            title="The Office Series Season 1", parent=the_office, order=1
         )
         season_2 = Playlist.objects.create(
-            title='The Office Series Season 2',
-            parent=the_office,
-            order=2
+            title="The Office Series Season 2", parent=the_office, order=2
         )
         season_3 = Playlist.objects.create(
-            title='The Office Series Season 3',
-            parent=the_office,
-            order=3
+            title="The Office Series Season 3", parent=the_office, order=3
         )
         self.parent_playlist = the_office
 
     def create_videos(self):
-        video_a = Video.objects.create(
-            title='Vide title',
-            video_id='abc'
-        )
-        video_b = Video.objects.create(
-            title='Vide title',
-            video_id='abcd'
-        )
-        video_c = Video.objects.create(
-            title='Vide title',
-            video_id='abce'
-        )
+        video_a = Video.objects.create(title="Vide title", video_id="abc")
+        video_b = Video.objects.create(title="Vide title", video_id="abcd")
+        video_c = Video.objects.create(title="Vide title", video_id="abce")
         self.video_a = video_a
         self.video_b = video_b
         self.video_c = video_c
@@ -51,13 +36,12 @@ class PlaylistModelTestCase(TestCase):
 
     def setUp(self) -> None:
         """
-            This method add data to the database
+        This method add data to the database
         """
         self.creat_parent_playlist_with_children()
         self.create_videos()
         self.playlist_obj_a = Playlist.objects.create(
-            title="This is my title",
-            video=self.video_a
+            title="This is my title", video=self.video_a
         )
         playlist_obj_b = Playlist.objects.create(
             title="This is my title",
@@ -86,25 +70,19 @@ class PlaylistModelTestCase(TestCase):
         self.assertEqual(count, 3)
 
     def test_playlist_through_model(self):
-        video_qs = sorted(list(self.video_qs.values_list('id')))
+        video_qs = sorted(list(self.video_qs.values_list("id")))
         # query all video in Video model
         playlist_obj_video_qs = sorted(
-            list(self.playlist_obj_b.videos.all()
-                 .values_list('id'))
+            list(self.playlist_obj_b.videos.all().values_list("id"))
         )
         # query all the videos that is in playlist_obj_b
         playlist_obj_playlist_item_qs = sorted(
-            list(self.playlist_obj_b.playlistitem_set.all()
-                 .values_list('video'))
+            list(self.playlist_obj_b.playlistitem_set.all().values_list("video"))
         )
         # query PlaylistItem in Playlist model
 
         # all these should have the same video ids in them
-        self.assertEqual(
-            video_qs,
-            playlist_obj_video_qs,
-            playlist_obj_playlist_item_qs
-        )
+        self.assertEqual(video_qs, playlist_obj_video_qs, playlist_obj_playlist_item_qs)
 
     def test_video_playlist_ids_property(self):
         # get_playlist_ids is a method in Video model
@@ -113,10 +91,9 @@ class PlaylistModelTestCase(TestCase):
         # obj_a has a foreign key relation with video_a
         # , so we have the playlist id in the Video object
 
-        actual_ids = list(Playlist.objects
-                          .filter(video=self.video_a)
-                          .values_list('id', flat=True)
-                          )
+        actual_ids = list(
+            Playlist.objects.filter(video=self.video_a).values_list("id", flat=True)
+        )
         # id of the playlist that filtered by the video_a
         self.assertEqual(ids, actual_ids)
 
@@ -154,8 +131,7 @@ class PlaylistModelTestCase(TestCase):
         # qs = Playlist.objects.filter(state=PublishStateOptions.PUBLISH)
         now = timezone.now()
         published_qs = Playlist.objects.filter(
-            state=PublishStateOptions.PUBLISH,
-            publish_timestamp__lte=now
+            state=PublishStateOptions.PUBLISH, publish_timestamp__lte=now
         )
         # we have published_timestamp when
         # state = PublishStateOptions.PUBLISH

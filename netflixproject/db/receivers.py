@@ -5,8 +5,10 @@ from .models import PublishStateOptions
 
 
 def publish_state_pre_save(sender, instance, *args, **kwargs):
-    if instance.state == PublishStateOptions.PUBLISH \
-            and instance.publish_timestamp is None:
+    if (
+        instance.state == PublishStateOptions.PUBLISH
+        and instance.publish_timestamp is None
+    ):
         instance.publish_timestamp = timezone.now()
     elif instance.state == PublishStateOptions.DRAFT:
         instance.publish_timestamp = None

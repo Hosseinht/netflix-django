@@ -7,14 +7,20 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('categories', '0001_initial'),
-        ('playlists', '0008_playlist_category'),
+        ("categories", "0001_initial"),
+        ("playlists", "0008_playlist_category"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='playlist',
-            name='category',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='playlists', to='categories.category'),
+            model_name="playlist",
+            name="category",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="playlists",
+                to="categories.category",
+            ),
         ),
     ]

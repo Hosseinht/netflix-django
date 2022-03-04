@@ -3,10 +3,7 @@ from django.db.models.signals import pre_save
 from django.utils import timezone
 
 from netflixproject.db.models import PublishStateOptions
-from netflixproject.db.receivers import (
-    publish_state_pre_save,
-    slugify_pre_save
-)
+from netflixproject.db.receivers import publish_state_pre_save, slugify_pre_save
 
 
 class VideoQuerySet(models.QuerySet):
@@ -14,8 +11,7 @@ class VideoQuerySet(models.QuerySet):
     def published(self):
         now = timezone.now()
         return self.filter(
-            state=PublishStateOptions.PUBLISH,
-            publish_timestamp__lte=now
+            state=PublishStateOptions.PUBLISH, publish_timestamp__lte=now
         )
         # we want our own custom method for filtering
 
@@ -28,12 +24,14 @@ class VideoManager(models.Manager):
 
     def published(self):
         return self.get_queryset().published()
+
     # now we can have Vide.objects
     # .filter(title__icontains="something").publish()
 
 
 # because we want to use it over and over again
 # , and we want our custom method to filter
+
 
 class Video(models.Model):
     title = models.CharField(max_length=220)
@@ -46,13 +44,10 @@ class Video(models.Model):
     state = models.CharField(
         max_length=2,
         choices=PublishStateOptions.choices,
-        default=PublishStateOptions.DRAFT
+        default=PublishStateOptions.DRAFT,
     )
     publish_timestamp = models.DateTimeField(
-        auto_now_add=False,
-        auto_now=False,
-        blank=True,
-        null=True
+        auto_now_add=False, auto_now=False, blank=True, null=True
     )
 
     # we want to set timestamp when state toggle one
@@ -68,7 +63,7 @@ class Video(models.Model):
         return self.active
 
     def get_playlist_ids(self):
-        return list(self.playlist_featured.all().values_list('id', flat=True))
+        return list(self.playlist_featured.all().values_list("id", flat=True))
 
 
 class VideoAllProxy(Video):

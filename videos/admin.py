@@ -4,21 +4,20 @@ from .models import VideoPublishedProxy, VideoAllProxy
 
 class VideoAllAdmin(admin.ModelAdmin):
     """
-        All videos
+    All videos
     """
+
     list_display = [
-        "title", "id", "video_id",
-        "state", "is_published",
-        "get_playlist_ids"
+        "title",
+        "id",
+        "video_id",
+        "state",
+        "is_published",
+        "get_playlist_ids",
     ]
-    search_fields = ['title']
-    list_filter = ['active', 'state']
-    readonly_fields = [
-        'id',
-        'is_published',
-        'publish_timestamp',
-        "get_playlist_ids"
-    ]
+    search_fields = ["title"]
+    list_filter = ["active", "state"]
+    readonly_fields = ["id", "is_published", "publish_timestamp", "get_playlist_ids"]
 
     class Meta:
         model = VideoAllProxy
@@ -30,13 +29,14 @@ class VideoAllAdmin(admin.ModelAdmin):
 
 class VideoProxyAdmin(admin.ModelAdmin):
     list_display = ["title", "video_id"]
-    search_fields = ['title']
+    search_fields = ["title"]
 
     class Meta:
         model = VideoPublishedProxy
 
     def get_queryset(self, request):
         return VideoPublishedProxy.objects.filter(active=True)
+
     # so here we will have only published videos and all
     # videos in the video admin
 

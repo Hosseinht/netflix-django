@@ -6,21 +6,20 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('playlists', '0006_playlist_type'),
+        ("playlists", "0006_playlist_type"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='MovieProxy',
-            fields=[
-            ],
+            name="MovieProxy",
+            fields=[],
             options={
-                'verbose_name': 'Movie',
-                'verbose_name_plural': 'Movies',
-                'proxy': True,
-                'indexes': [],
-                'constraints': [],
+                "verbose_name": "Movie",
+                "verbose_name_plural": "Movies",
+                "proxy": True,
+                "indexes": [],
+                "constraints": [],
             },
-            bases=('playlists.playlist',),
+            bases=("playlists.playlist",),
         ),
     ]

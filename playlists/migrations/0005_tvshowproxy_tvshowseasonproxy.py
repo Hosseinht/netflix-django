@@ -6,34 +6,32 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('playlists', '0004_auto_20220220_1806'),
+        ("playlists", "0004_auto_20220220_1806"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='TvShowProxy',
-            fields=[
-            ],
+            name="TvShowProxy",
+            fields=[],
             options={
-                'verbose_name': 'Tv Show',
-                'verbose_name_plural': 'Tv Shows',
-                'proxy': True,
-                'indexes': [],
-                'constraints': [],
+                "verbose_name": "Tv Show",
+                "verbose_name_plural": "Tv Shows",
+                "proxy": True,
+                "indexes": [],
+                "constraints": [],
             },
-            bases=('playlists.playlist',),
+            bases=("playlists.playlist",),
         ),
         migrations.CreateModel(
-            name='TvShowSeasonProxy',
-            fields=[
-            ],
+            name="TvShowSeasonProxy",
+            fields=[],
             options={
-                'verbose_name': 'Season',
-                'verbose_name_plural': 'Seasons',
-                'proxy': True,
-                'indexes': [],
-                'constraints': [],
+                "verbose_name": "Season",
+                "verbose_name_plural": "Seasons",
+                "proxy": True,
+                "indexes": [],
+                "constraints": [],
             },
-            bases=('playlists.playlist',),
+            bases=("playlists.playlist",),
         ),
     ]
