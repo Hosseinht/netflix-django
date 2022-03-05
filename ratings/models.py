@@ -23,5 +23,5 @@ class Rating(models.Model):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")
 
-    def __str__(self):
-        return self.tag
+    # def __str__(self):
+    #     return self.tag

@@ -1,5 +1,6 @@
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
+from django.db.models import Avg, Min, Max
 from django.db.models.signals import pre_save
 from django.utils import timezone
 
@@ -9,6 +10,7 @@ from netflixproject.db.receivers import publish_state_pre_save, slugify_pre_save
 from categories.models import Category
 from tags.models import TaggedItem
 from videos.models import Video
+from ratings.models import Rating
 
 
 class PlaylistQuerySet(models.QuerySet):
@@ -88,6 +90,7 @@ class Playlist(models.Model):
         auto_now_add=False, auto_now=False, blank=True, null=True
     )
     tags = GenericRelation(TaggedItem, related_query_name="playlist")
+    ratings = GenericRelation(Rating, related_query_name="playlist")
 
     # we want to set timestamp when state toggle one
     # approach is override save method. we can use signals also
@@ -96,6 +99,17 @@ class Playlist(models.Model):
 
     def __str__(self):
         return str(self.title)
+
+    def get_rating_avg(self):
+        return Playlist.objects.filter(id=self.id). \
+            aggregate(avrage=Avg("ratings__value"))
+
+    def get_rating_spread(self):
+        return Playlist.objects.filter(id=self.id). \
+            aggregate(
+            max=Max("ratings__value"),
+            min=Min("ratings__value")
+        )
 
     @property
     def is_published(self):
