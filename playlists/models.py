@@ -35,6 +35,11 @@ class PlaylistManager(models.Manager):
     # now we can have Vide.objects
     # .filter(title__icontains="something").publish()
 
+    def featured_playlist(self):
+        return self.get_queryset().filter(
+            type=Playlist.PlaylistTypeChoices.PLAYLIST
+        )
+
 
 # because we want to use it over and over again
 # , and we want our custom method to filter
