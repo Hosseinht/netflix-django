@@ -1,6 +1,6 @@
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
-from django.db.models import Avg, Min, Max
+from django.db.models import Avg, Min, Max, Q
 from django.db.models.signals import pre_save
 from django.utils import timezone
 
@@ -116,6 +116,9 @@ class Playlist(models.Model):
             min=Min("ratings__value")
         )
 
+    def get_short_display(self):
+        return ""
+
     @property
     def is_published(self):
         return self.active
@@ -183,6 +186,14 @@ class TvShowProxy(Playlist):
         self.type = Playlist.PlaylistTypeChoices.SHOW
         super().save(*args, **kwargs)
 
+    @property
+    def seasons(self):
+        return self.playlist_set.published()
+        # playlist_set is parent field in Playlist
+
+    def get_short_display(self):
+        return f"{self.seasons.count()} Seasons"
+
 
 class TvShowSeasonProxyManager(PlaylistManager):
     def all(self):
@@ -214,5 +225,11 @@ class TvShowSeasonProxy(Playlist):
         super().save(*args, **kwargs)
 
 
-pre_save.connect(publish_state_pre_save, sender=Playlist)
 pre_save.connect(slugify_pre_save, sender=Playlist)
+pre_save.connect(publish_state_pre_save, sender=Playlist)
+pre_save.connect(slugify_pre_save, sender=TvShowProxy)
+pre_save.connect(publish_state_pre_save, sender=TvShowProxy)
+pre_save.connect(slugify_pre_save, sender=TvShowSeasonProxy)
+pre_save.connect(publish_state_pre_save, sender=TvShowSeasonProxy)
+pre_save.connect(slugify_pre_save, sender=MovieProxy)
+pre_save.connect(publish_state_pre_save, sender=MovieProxy)

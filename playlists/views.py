@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import ListView
 
-from .models import Playlist,MovieProxy, TvShowProxy
+from .models import Playlist, MovieProxy, TvShowProxy
 
 
 class PlaylistMixin():
@@ -15,19 +15,20 @@ class PlaylistMixin():
         print(context)
         return context
 
+    def get_queryset(self):
+        return super().get_queryset().published()
+
 
 class MovieListView(PlaylistMixin, ListView):
     queryset = MovieProxy.objects.all()
-    context_object_name = 'movielist'
     title = "Movies"
 
 
-class TvShowListView(PlaylistMixin,ListView):
+class TvShowListView(PlaylistMixin, ListView):
     queryset = TvShowProxy.objects.all()
     title = "Tv Shows"
 
 
-class FeaturedPlaylistListView(PlaylistMixin,ListView):
+class FeaturedPlaylistListView(PlaylistMixin, ListView):
     queryset = Playlist.objects.featured_playlist()
     title = "Featured"
-
