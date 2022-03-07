@@ -1,7 +1,7 @@
-from django.shortcuts import render
-from django.views.generic import ListView
+from django.http import Http404
+from django.views.generic import ListView, DetailView
 
-from .models import Playlist, MovieProxy, TvShowProxy
+from .models import Playlist, MovieProxy, TvShowProxy, TvShowSeasonProxy
 
 
 class PlaylistMixin():
@@ -24,9 +24,43 @@ class MovieListView(PlaylistMixin, ListView):
     title = "Movies"
 
 
+class MovieDetailView(PlaylistMixin, DetailView):
+    queryset = MovieProxy.objects.all()
+    template_name = 'playlists/movie_detail.html'
+    title = "Movies"
+    # context_object_name = "instance"
+
+
+class PlaylistDetailView(PlaylistMixin, DetailView):
+    queryset = Playlist.objects.all()
+    template_name = 'playlists/playlist_detail.html'
+
+
 class TvShowListView(PlaylistMixin, ListView):
     queryset = TvShowProxy.objects.all()
     title = "Tv Shows"
+
+
+class TvShowDetailView(PlaylistMixin, DetailView):
+    queryset = TvShowProxy.objects.all()
+    template_name = 'playlists/tvshow_detail.html'
+
+
+class TvShowSeasonDetailView(PlaylistMixin, DetailView):
+    queryset = TvShowSeasonProxy.objects.all()
+    template_name = 'playlists/season_detail.html'
+
+    def get_object(self):
+        kwargs = self.kwargs
+        show_slug = kwargs.get('showSlug')
+        season_slug = kwargs.get('seasonSlug')
+        qs = self.get_queryset().filter(
+            parent__slug__iexact=show_slug,
+            slug__iexact=season_slug
+        )
+        if not qs.count() == 1:
+            raise Http404
+        return qs.first()
 
 
 class FeaturedPlaylistListView(PlaylistMixin, ListView):
